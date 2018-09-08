@@ -5,8 +5,8 @@ import java.util.Set;
 public class servletInit extends Application {
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = new HashSet<Class<?>>();
-        classes.add(registerTruck.class);
-
+        classes.add(truckActions.class);
+        classes.add(orderActions.class);
         return classes;
     }
 

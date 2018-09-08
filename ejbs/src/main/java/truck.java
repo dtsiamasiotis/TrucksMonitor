@@ -1,11 +1,32 @@
 import javax.ejb.Stateless;
+import javax.persistence.*;
 
-@Stateless
+
+@Entity
+@Table(name="trucks")
 public class truck {
-    private String licencePlate;
-    private int kmTravelled;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
 
-    public void setLicencePlate(String licencePlate) {
-        this.licencePlate = licencePlate;
+    private String licence_plate;
+    private String status;
+    private int current_order_id;
+
+    public truck(){}
+
+    public void setLicenceplate(String licence_plate) {
+        this.licence_plate = licence_plate;
     }
+    public String getLicenceplate(){return licence_plate;}
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    public String getStatus(){return status;}
+
+    public void setCurrentorderid(int current_order_id) {
+        this.current_order_id = current_order_id;
+    }
+    public int getCurrenorderid(){return current_order_id;}
 }
