@@ -1,5 +1,6 @@
 import javax.ejb.Stateless;
 import javax.persistence.*;
+import javax.websocket.Session;
 
 
 @Entity
@@ -12,8 +13,12 @@ public class truck {
     private String licence_plate;
     private String status;
     private int current_order_id;
+    @Transient
+    private Session session;
 
     public truck(){}
+
+    public int getId() { return id; }
 
     public void setLicenceplate(String licence_plate) {
         this.licence_plate = licence_plate;
@@ -29,4 +34,7 @@ public class truck {
         this.current_order_id = current_order_id;
     }
     public int getCurrenorderid(){return current_order_id;}
+
+    public void setSession(Session session){this.session=session;}
+    public Session getSession(){return session;}
 }
