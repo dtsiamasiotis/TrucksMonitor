@@ -1,4 +1,3 @@
-import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -29,5 +28,6 @@ public class webSocketServer {
             try {
                 bcManager.testUnmarshall();
             }catch(Exception e){}
+
     }
 }
