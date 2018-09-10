@@ -15,6 +15,10 @@ public class truck {
     private int current_order_id;
     @Transient
     private Session session;
+    @Transient
+    private String lat;
+    @Transient
+    private String lng;
 
     public truck(){}
 
@@ -37,4 +41,11 @@ public class truck {
 
     public void setSession(Session session){this.session=session;}
     public Session getSession(){return session;}
+
+    public void setLat(String lat){this.lat = lat;}
+    public String getLat(){return this.lat;}
+
+    public void setLng(String lng){this.lng = lng;}
+    public String getLng(){return this.lng;}
+
 }

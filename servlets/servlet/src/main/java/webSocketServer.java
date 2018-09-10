@@ -23,7 +23,7 @@ public class webSocketServer {
         if(message.contains("connectTruck"))
             bcManager.connectFromTruck(session,message);
         if(message.contains("coordinates"))
-            System.out.println(message);
+            bcManager.setCoordinatesFromClient(session,message);
         else
             try {
                 bcManager.testUnmarshall();

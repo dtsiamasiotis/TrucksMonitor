@@ -48,7 +48,6 @@ public class backendManager {
     {
         orders.add(newOrder);
         pollTrucksForPosition();
-        //poll trucks for their current position
         //call google api to find the distance for all of them
         //send the order to the truck with the minimum distance
     }
@@ -79,5 +78,21 @@ public class backendManager {
         googleResponse res = gson.fromJson(googleJson,googleResponse.class);
 
 
+    }
+
+    public void setCoordinatesFromClient(Session session,String message)
+    {
+        for(truck Truck:trucks)
+        {
+            Session truckSession = Truck.getSession();
+            if(truckSession==session)
+            {
+                String[] coordinatesParts = message.split(":");
+                String lat = (coordinatesParts[1].split(","))[0];
+                String lng = (coordinatesParts[1].split(","))[1];
+                Truck.setLat(lat);
+                Truck.setLng(lng);
+            }
+        }
     }
 }
