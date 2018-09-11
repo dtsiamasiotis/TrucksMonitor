@@ -2,8 +2,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
@@ -17,9 +18,12 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
 import javax.websocket.Session;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.core.Response;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+
 
 
 @Startup
@@ -73,6 +77,7 @@ public class backendManager {
 
     public void testUnmarshall()  throws Exception
     {
+        sendRequestToGoogleApi();
         String googleJson = "{\"destination_addresses\": [\"Kountouriotou 253, Pireas 185 36, Greece\"],\"origin_addresses\": [\"Patriarchou Grigoriou E 5, Ag. Paraskevi 153 41, Greece\"],\"rows\": [{\"elements\": [{\"distance\": {\"text\": \"20.8 mi\",\"value\": 33486},\"duration\": {\"text\": \"33 mins\",\"value\": 1974},\"status\": \"OK\"}],}],\"status\": \"OK\"}";
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         googleResponse res = gson.fromJson(googleJson,googleResponse.class);
@@ -94,5 +99,16 @@ public class backendManager {
                 Truck.setLng(lng);
             }
         }
+    }
+
+    public void sendRequestToGoogleApi()
+    {
+        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyWebTarget target = client.target("http://localhost:8080/RESTEasyApplication/user-management/users");
+        Response response = target.request().get();
+        //Read output in string format
+        String value = response.readEntity(String.class);
+        System.out.println(value);
+        response.close();
     }
 }
