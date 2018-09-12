@@ -77,8 +77,8 @@ public class backendManager {
 
     public void testUnmarshall()  throws Exception
     {
-        sendRequestToGoogleApi();
-        String googleJson = "{\"destination_addresses\": [\"Kountouriotou 253, Pireas 185 36, Greece\"],\"origin_addresses\": [\"Patriarchou Grigoriou E 5, Ag. Paraskevi 153 41, Greece\"],\"rows\": [{\"elements\": [{\"distance\": {\"text\": \"20.8 mi\",\"value\": 33486},\"duration\": {\"text\": \"33 mins\",\"value\": 1974},\"status\": \"OK\"}],}],\"status\": \"OK\"}";
+        String googleJson = sendRequestToGoogleApi();
+        //String googleJson = "{\"destination_addresses\": [\"Kountouriotou 253, Pireas 185 36, Greece\"],\"origin_addresses\": [\"Patriarchou Grigoriou E 5, Ag. Paraskevi 153 41, Greece\"],\"rows\": [{\"elements\": [{\"distance\": {\"text\": \"20.8 mi\",\"value\": 33486},\"duration\": {\"text\": \"33 mins\",\"value\": 1974},\"status\": \"OK\"}],}],\"status\": \"OK\"}";
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         googleResponse res = gson.fromJson(googleJson,googleResponse.class);
 
@@ -101,14 +101,15 @@ public class backendManager {
         }
     }
 
-    public void sendRequestToGoogleApi()
+    public String sendRequestToGoogleApi(String originsCoordinates)
     {
         ResteasyClient client = new ResteasyClientBuilder().build();
-        ResteasyWebTarget target = client.target("http://localhost:8080/RESTEasyApplication/user-management/users");
+        ResteasyWebTarget target = client.target("https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+originsCoordinates+"&destinations=Kountouriotou 253,Pireas&departure_time=now&key=");
         Response response = target.request().get();
         //Read output in string format
-        String value = response.readEntity(String.class);
-        System.out.println(value);
+        String responseStr = response.readEntity(String.class);
+        System.out.println(responseStr);
         response.close();
+        return responseStr;
     }
 }
