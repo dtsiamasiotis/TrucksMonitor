@@ -1,6 +1,7 @@
 import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.persistence.*;
 import javax.ws.rs.QueryParam;
@@ -13,19 +14,21 @@ public class truckActions{
     @EJB
     private dbManager dbManager;
 
-    @GET
+    @POST
     @Path("/registerTruck")
-    public String handleRegisterTruck(@QueryParam("licencePlate") String licencePlate)
+    public String handleRegisterTruck(truck newTruck)
     {
-        System.out.println("in service");
-        Truck = new truck();
-        Truck.setLicenceplate(licencePlate);
-        dbManager.addTruck(Truck);
+
+
+        //Truck = new truck();
+       // Truck.setLicenceplate(newTruck.getLicenceplate());
+        System.out.println(newTruck.getLicenceplate());
+        //dbManager.addTruck(Truck);
         return "OK";
        // return Response.status(200).build();
     }
 
-    @GET
+    @POST
     @Path("/deleteTruck")
     public String handleDeleteTruck(@QueryParam("id") Integer id)
     {
