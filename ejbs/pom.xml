@@ -59,12 +59,12 @@
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs</artifactId>
-      <version>3.6.1.Final</version>
+      <version>3.0.11.Final</version>
     </dependency>
       <dependency>
           <groupId>org.jboss.resteasy</groupId>
           <artifactId>resteasy-client</artifactId>
-          <version>3.6.1.Final</version>
+          <version>3.0.11.Final</version>
       </dependency>
   </dependencies>
 

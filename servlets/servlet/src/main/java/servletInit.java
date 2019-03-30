@@ -7,6 +7,7 @@ public class servletInit extends Application {
         Set<Class<?>> classes = new HashSet<Class<?>>();
         classes.add(truckActions.class);
         classes.add(orderActions.class);
+        classes.add(CorsFilter.class);
         return classes;
     }
 
