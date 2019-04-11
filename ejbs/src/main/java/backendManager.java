@@ -11,8 +11,8 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.json.simple.JSONObject;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
+import javax.annotation.Resource;
+import javax.ejb.*;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -41,6 +41,8 @@ public class backendManager {
     @PersistenceUnit
     private EntityManagerFactory entityManagerFactory;
 
+    @Resource
+    TimerService timerService;
 
     @PostConstruct
     public void init()
@@ -57,6 +59,9 @@ public class backendManager {
     {
         orderProcessor.addOrder(newOrder);
         pollTrucksForPosition(newOrder.getId());
+
+        long duration = 10000;
+        Timer timer = timerService.createSingleActionTimer(duration, new TimerConfig());
         //poll ta trucks alla me to orderid to opoio apantane pisw mazi me ti thesi tous. Kathe order exei mia lista
         //me ta fortiga kai tis theseis tous kai kaneis ekei add otan apantisei to fortigo. OrderProcessor antikeimeno
         //pou exei oura me ta orders. Otan erxetai neo order to kaneis push ekei. Molis ginei to push, trexei
@@ -131,10 +136,6 @@ public class backendManager {
         //return "";
     }
 
-    public void findClosestTruck()
-    {
-
-    }
 
     public void pollTrucksForPosition(int orderId)
     {
@@ -153,5 +154,11 @@ public class backendManager {
         int orderId = Integer.parseInt(orderIdStr);
         orderProcessor.addCandidateTruck(Truck,orderId);
 
+    }
+
+    @Timeout
+    public void calculateDistances()
+    {
+        orderProcessor.findClosestTruck();
     }
 }

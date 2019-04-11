@@ -26,5 +26,5 @@ public class order {
     {
         candidateTrucks.add(newTruck);
     }
-
+    public List<truck> getCandidateTrucks(){return candidateTrucks;}
 }
