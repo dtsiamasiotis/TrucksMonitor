@@ -22,8 +22,8 @@ public class webSocketServer {
     {
         if(message.contains("connectTruck"))
             bcManager.connectFromTruck(session,message);
-        if(message.contains("coordinates"))
-            bcManager.setCoordinatesFromClient(session,message);
+        else if(message.contains("coordinates"))
+            bcManager.handleResponseForOrder(session,message);
         else
             try {
                 bcManager.testUnmarshall();

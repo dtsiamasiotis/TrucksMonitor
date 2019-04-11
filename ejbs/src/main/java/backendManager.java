@@ -1,10 +1,14 @@
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.json.simple.JSONObject;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
@@ -32,7 +36,8 @@ public class backendManager {
 
     private List<truck> trucks = new ArrayList<truck>();
 
-    private List<order> orders = new ArrayList<order>();
+    private orderProcessor orderProcessor = new orderProcessor();;
+
     @PersistenceUnit
     private EntityManagerFactory entityManagerFactory;
 
@@ -50,18 +55,23 @@ public class backendManager {
 
     public void receiveNewOrder(@Observes(during = TransactionPhase.AFTER_SUCCESS) @transaction order newOrder)
     {
-        orders.add(newOrder);
-        pollTrucksForPosition();
-        //call google api to find the distance for all of them
-        //send the order to the truck with the minimum distance
+        orderProcessor.addOrder(newOrder);
+        pollTrucksForPosition(newOrder.getId());
+        //poll ta trucks alla me to orderid to opoio apantane pisw mazi me ti thesi tous. Kathe order exei mia lista
+        //me ta fortiga kai tis theseis tous kai kaneis ekei add otan apantisei to fortigo. OrderProcessor antikeimeno
+        //pou exei oura me ta orders. Otan erxetai neo order to kaneis push ekei. Molis ginei to push, trexei
+        //synchronized block pou pairnei to pio palio apo tin oura kai psaxnei kalitero sindiasmo apostasi-xrono
     }
 
     public void connectFromTruck(Session session,String message)
     {
         String parts[] = message.split(":");
         for (truck Truck:trucks) {
-            if(Truck.getId()==Integer.parseInt(parts[1]))
+            if(Truck.getId()==Integer.parseInt(parts[1])){
                 Truck.setSession(session);
+                System.out.println("Truck:"+Truck.getId()+"connected");
+            }
+
         }
     }
 
@@ -75,41 +85,73 @@ public class backendManager {
         }
     }
 
+
     public void testUnmarshall()  throws Exception
     {
-        String googleJson = sendRequestToGoogleApi();
+        String googleJson = sendRequestToGoogleApi("38.006726,23.863777");
         //String googleJson = "{\"destination_addresses\": [\"Kountouriotou 253, Pireas 185 36, Greece\"],\"origin_addresses\": [\"Patriarchou Grigoriou E 5, Ag. Paraskevi 153 41, Greece\"],\"rows\": [{\"elements\": [{\"distance\": {\"text\": \"20.8 mi\",\"value\": 33486},\"duration\": {\"text\": \"33 mins\",\"value\": 1974},\"status\": \"OK\"}],}],\"status\": \"OK\"}";
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         googleResponse res = gson.fromJson(googleJson,googleResponse.class);
-
+        return;
 
     }
 
-    public void setCoordinatesFromClient(Session session,String message)
+    public truck setCoordinatesFromClient(Session session,String message)
     {
         for(truck Truck:trucks)
         {
             Session truckSession = Truck.getSession();
             if(truckSession==session)
             {
-                String[] coordinatesParts = message.split(":");
+                String[] coordinatesParts = message.split("\\|")[0].split(":");
                 String lat = (coordinatesParts[1].split(","))[0];
                 String lng = (coordinatesParts[1].split(","))[1];
                 Truck.setLat(lat);
                 Truck.setLng(lng);
+                return Truck;
             }
         }
+
+        return null;
     }
 
     public String sendRequestToGoogleApi(String originsCoordinates)
     {
         ResteasyClient client = new ResteasyClientBuilder().build();
-        ResteasyWebTarget target = client.target("https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+originsCoordinates+"&destinations=Kountouriotou 253,Pireas&departure_time=now&key=");
+        ResteasyWebTarget target = client.target("http://localhost:4000/google_api");//"https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+originsCoordinates+"&destinations=Kountouriotou 253,Pireas&departure_time=now&key=AIzaSyDW7z9-4rKR6W5kXTQ1AjiKB_2JSNsl3ko");
+
         Response response = target.request().get();
         //Read output in string format
         String responseStr = response.readEntity(String.class);
+
+
         System.out.println(responseStr);
         response.close();
         return responseStr;
+        //return "";
+    }
+
+    public void findClosestTruck()
+    {
+
+    }
+
+    public void pollTrucksForPosition(int orderId)
+    {
+        for(truck Truck:trucks)
+        {
+            Session session = Truck.getSession();
+            if(session!=null && session.isOpen())
+                session.getAsyncRemote().sendText("sharePosition|orderId:"+orderId);
+        }
+    }
+
+    public void handleResponseForOrder(Session session,String message)
+    {
+        truck Truck = setCoordinatesFromClient(session,message);
+        String orderIdStr = message.split("\\|")[1].split(":")[1];
+        int orderId = Integer.parseInt(orderIdStr);
+        orderProcessor.addCandidateTruck(Truck,orderId);
+
     }
 }

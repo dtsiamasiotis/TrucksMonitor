@@ -1,9 +1,8 @@
 import javax.ejb.Stateful;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
+import javax.persistence.*;
+import java.util.List;
 
 @Stateful
 public class dbManager {
@@ -38,5 +37,13 @@ public class dbManager {
         EntityManager em = getEntityManager();
         incomingOrder.fire(Order);
         em.persist(Order);
+    }
+
+    public List<truck> getTrucks()
+    {
+        EntityManager em = getEntityManager();
+        Query q = em.createNativeQuery("SELECT * FROM trucks",truck.class);
+        List<truck> trucks = q.getResultList();
+        return trucks;
     }
 }

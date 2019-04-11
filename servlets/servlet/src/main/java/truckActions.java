@@ -1,8 +1,12 @@
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ws.rs.*;
 import javax.persistence.*;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Local @Path("/truckActions")
 public class truckActions{
@@ -21,29 +25,28 @@ public class truckActions{
         Truck = new truck();
         Truck.setLicenceplate(newTruck.getLicenceplate());
         dbManager.addTruck(Truck);
-        //return "OK";
-        return Response.ok("")
-              //  .header("Access-Control-Allow-Origin", "*")
-              //  .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
-               // .header("Access-Control-Allow-Credentials", "true")
-                //.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
-                //.header("Access-Control-Max-Age", "1209600")
-                .build();
 
-       // return Response.status(200).build();
+        return Response.ok("").build();
+
+
     }
 
-   /* @OPTIONS
-    @Path("{path : .*}")
-    public Response options() {
-        return Response.ok("")
-            //    .header("Access-Control-Allow-Origin", "*")
-                .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
-                .header("Access-Control-Allow-Credentials", "true")
-                .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
-                .header("Access-Control-Max-Age", "1209600")
-                .build();
-    }*/
+    @GET
+    @Path("/getTrucks")
+    public Response handleGetTrucks()
+    {
+        List<truck> trucks = dbManager.getTrucks();
+        JsonArray responseJson = new JsonArray();
+        for(truck Truck:trucks)
+        {
+            JsonObject truckJson = new JsonObject();
+            truckJson.addProperty("licence_plate",Truck.getLicenceplate());
+            truckJson.addProperty("status",Truck.getStatus());
+            truckJson.addProperty("current_order_id",Truck.getCurrenorderid());
+            responseJson.add(truckJson);
+        }
+        return Response.ok(responseJson.toString()).build();
+    }
 
     @GET
     @Path("/deleteTruck")
