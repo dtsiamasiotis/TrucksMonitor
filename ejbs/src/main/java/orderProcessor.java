@@ -4,11 +4,17 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
+import javax.ejb.EJB;
+import javax.ejb.Singleton;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class orderProcessor {
+    @EJB
+    private dbManager dbManager;
+
     private List<order> orders = new ArrayList<order>();
 
     public void addOrder(order newOrder)
@@ -30,6 +36,8 @@ public class orderProcessor {
         synchronized (this)
         {
             order Order = orders.remove(0);
+            truck closestTruck = null;
+            long smallestDuration = 1000000L;
             for(truck Truck:Order.getCandidateTrucks())
             {
                 String truckCoordinates = Truck.getLat()+","+Truck.getLng();
@@ -37,8 +45,18 @@ public class orderProcessor {
                 //String googleJson = "{\"destination_addresses\": [\"Kountouriotou 253, Pireas 185 36, Greece\"],\"origin_addresses\": [\"Patriarchou Grigoriou E 5, Ag. Paraskevi 153 41, Greece\"],\"rows\": [{\"elements\": [{\"distance\": {\"text\": \"20.8 mi\",\"value\": 33486},\"duration\": {\"text\": \"33 mins\",\"value\": 1974},\"status\": \"OK\"}],}],\"status\": \"OK\"}";
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 googleResponse res = gson.fromJson(googleJson,googleResponse.class);
-                System.out.println(res.getRows()[0].getElements()[0].getDuration().get("value"));
+                String duration = res.getRows()[0].getElements()[0].getDuration().get("value");
+                long durationLong = Long.parseLong(duration);
+                System.out.println(duration);
+                if(durationLong<smallestDuration)
+                {
+                    smallestDuration = durationLong;
+                    closestTruck = Truck;
+                }
             }
+
+            closestTruck.setCurrentorderid(Order.getId());
+            dbManager.updateTruck(closestTruck);
         }
     }
 

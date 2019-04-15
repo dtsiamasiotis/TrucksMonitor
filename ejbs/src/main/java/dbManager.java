@@ -32,6 +32,12 @@ public class dbManager {
         em.remove(em.find(truck.class,id));
     }
 
+    public void updateTruck(truck Truck)
+    {
+        EntityManager em = getEntityManager();
+        em.merge(Truck);
+    }
+
     public void addOrder(order Order)
     {
         EntityManager em = getEntityManager();

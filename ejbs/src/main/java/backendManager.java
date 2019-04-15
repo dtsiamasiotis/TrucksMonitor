@@ -36,13 +36,15 @@ public class backendManager {
 
     private List<truck> trucks = new ArrayList<truck>();
 
-    private orderProcessor orderProcessor = new orderProcessor();;
+    @EJB
+    private orderProcessor orderProcessor;
 
     @PersistenceUnit
     private EntityManagerFactory entityManagerFactory;
 
     @Resource
     TimerService timerService;
+
 
     @PostConstruct
     public void init()
