@@ -24,6 +24,7 @@ public class truckActions{
 
         Truck = new truck();
         Truck.setLicenceplate(newTruck.getLicenceplate());
+        Truck.setStatus(newTruck.getStatus());
         dbManager.addTruck(Truck);
 
         return Response.ok("").build();
