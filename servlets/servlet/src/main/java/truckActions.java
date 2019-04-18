@@ -41,6 +41,7 @@ public class truckActions{
         for(truck Truck:trucks)
         {
             JsonObject truckJson = new JsonObject();
+            truckJson.addProperty("id",Truck.getId());
             truckJson.addProperty("licence_plate",Truck.getLicenceplate());
             truckJson.addProperty("status",Truck.getStatus());
             truckJson.addProperty("current_order_id",Truck.getCurrenorderid());
@@ -49,12 +50,13 @@ public class truckActions{
         return Response.ok(responseJson.toString()).build();
     }
 
-    @GET
+    @POST
     @Path("/deleteTruck")
-    public String handleDeleteTruck(@QueryParam("id") Integer id)
+    public Response handleDeleteTruck(truck Truck)
     {
+        int id = Truck.getId();
         dbManager.removeTruck(id);
-        return "OK";
+        return Response.ok("").build();
     }
 
 }

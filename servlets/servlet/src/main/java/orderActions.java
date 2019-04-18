@@ -16,15 +16,6 @@ public class orderActions {
     @EJB
     private dbManager dbManager;
 
-    @GET
-    @Path("addOrder")
-    public String addOrder(@QueryParam("quantity") String quantity)
-    {
-        order Order = new order();
-        Order.setQuantity(Integer.parseInt(quantity));
-        dbManager.addOrder(Order);
-        return "OK";
-    }
 
     @POST
     @Path("addOrder")
