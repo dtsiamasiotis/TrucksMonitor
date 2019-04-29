@@ -45,11 +45,25 @@ public class dbManager {
         em.persist(Order);
     }
 
+    public void removeOrder(Integer id)
+    {
+        EntityManager em = getEntityManager();
+        em.remove(em.find(order.class,id));
+    }
+
     public List<truck> getTrucks()
     {
         EntityManager em = getEntityManager();
         Query q = em.createNativeQuery("SELECT * FROM trucks",truck.class);
         List<truck> trucks = q.getResultList();
         return trucks;
+    }
+
+    public List<order> getOrders()
+    {
+        EntityManager em = getEntityManager();
+        Query q = em.createNativeQuery("SELECT * FROM orders",order.class);
+        List<order> orders = q.getResultList();
+        return orders;
     }
 }
