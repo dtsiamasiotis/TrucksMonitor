@@ -9,7 +9,7 @@ public class elements {
         return this.distance;
     }
 
-    public void setDistance(Map<String,String> duration){
+    public void setDistance(Map<String,String> distance){
         this.distance=distance;
     }
 
