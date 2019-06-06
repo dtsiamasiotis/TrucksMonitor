@@ -1,6 +1,6 @@
 import java.util.List;
 
-public class googleResponse {
+public class googleResponseDistance {
     private String[] destination_addresses;
     private String[] origin_addresses;
     private row[] rows;
