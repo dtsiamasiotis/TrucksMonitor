@@ -93,7 +93,7 @@ public class backendManager {
     }
 
 
-    public void testUnmarshall()  throws Exception
+    /*public void testUnmarshall()  throws Exception
     {
         String googleJson = sendRequestToGoogleApi("38.006726,23.863777");
         //String googleJson = "{\"destination_addresses\": [\"Kountouriotou 253, Pireas 185 36, Greece\"],\"origin_addresses\": [\"Patriarchou Grigoriou E 5, Ag. Paraskevi 153 41, Greece\"],\"rows\": [{\"elements\": [{\"distance\": {\"text\": \"20.8 mi\",\"value\": 33486},\"duration\": {\"text\": \"33 mins\",\"value\": 1974},\"status\": \"OK\"}],}],\"status\": \"OK\"}";
@@ -101,7 +101,7 @@ public class backendManager {
         googleResponse res = gson.fromJson(googleJson,googleResponse.class);
         return;
 
-    }
+    }*/
 
     public truck setCoordinatesFromClient(Session session,String message)
     {
@@ -161,6 +161,6 @@ public class backendManager {
     @Timeout
     public void calculateDistances()
     {
-        orderProcessor.findClosestTruck();
+        //orderProcessor.findClosestTruck();
     }
 }

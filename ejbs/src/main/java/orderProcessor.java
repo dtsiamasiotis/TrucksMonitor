@@ -31,7 +31,7 @@ public class orderProcessor {
         }
     }
 
-    public void findClosestTruck()
+    /*public void findClosestTruck()
     {
         synchronized (this)
         {
@@ -58,7 +58,7 @@ public class orderProcessor {
             closestTruck.setCurrentorderid(Order.getId());
             dbManager.updateTruck(closestTruck);
         }
-    }
+    }*/
 
     public String sendRequestToGoogleApi(String originsCoordinates)
     {
