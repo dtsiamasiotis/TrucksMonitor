@@ -1,0 +1,34 @@
+# 
+# sample patterns
+#
+
+*.[oa]
+*~
+
+# ignore all .a files
+*.a
+
+# but do track lib.a, even though you're ignoring .a files above
+!lib.a
+
+# ignore all files in the build/ directory
+build/
+
+# 
+# maven related
+#
+target
+
+# 
+# intellij related
+#
+.idea
+*.iml
+
+#
+# eclipse releated
+#
+.classpath
+.settings
+.project
+
