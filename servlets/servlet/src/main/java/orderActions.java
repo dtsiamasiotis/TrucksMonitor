@@ -28,6 +28,7 @@ public class orderActions {
 
         Order = new order();
         Order.setQuantity(newOrder.getQuantity());
+        Order.setAddress(newOrder.getAddress());
         dbManager.addOrder(Order);
 
         return Response.ok("").build();
@@ -47,6 +48,7 @@ public class orderActions {
             orderJson.addProperty("id",Order.getId());
             orderJson.addProperty("quantity",Order.getQuantity());
             orderJson.addProperty("status",Order.getStatus());
+            orderJson.addProperty("address",Order.getAddress());
             responseJson.add(orderJson);
         }
         return Response.ok(responseJson.toString()).build();

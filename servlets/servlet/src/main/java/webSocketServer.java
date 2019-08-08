@@ -15,8 +15,10 @@ public class webSocketServer {
     @OnOpen
     public void handleOpen(Session session)
     {
-
+        System.out.println(session.getId());
+        bcManager.connectFromTruck(session);
     }
+
     @OnMessage
     public void handleMessage(Session session, String message)
     {
@@ -26,7 +28,7 @@ public class webSocketServer {
             bcManager.handleResponseForOrder(session,message);
         else
             try {
-                bcManager.testUnmarshall();
+               // bcManager.testUnmarshall();
             }catch(Exception e){}
 
     }

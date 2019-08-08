@@ -13,7 +13,7 @@ public class googleService {
     public String sendGeocodeRequest(String address)
     {
         ResteasyClient client = new ResteasyClientBuilder().build();
-        ResteasyWebTarget target = client.target("http://localhost:4000/geocode");//"https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+originsCoordinates+"&destinations=Kountouriotou 253,Pireas&departure_time=now&key=AIzaSyDW7z9-4rKR6W5kXTQ1AjiKB_2JSNsl3ko");
+        ResteasyWebTarget target = client.target("http://localhost:4000/geocode");//"https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+originsCoordinates+"&destinations="+destinationAddress+"&departure_time=now&key=AIzaSyDW7z9-4rKR6W5kXTQ1AjiKB_2JSNsl3ko");
         Response response = target.request().get();
         String responseStr = response.readEntity(String.class);
         response.close();
@@ -21,10 +21,10 @@ public class googleService {
         return responseStr;
     }
 
-    public String sendDistanceRequest(String address)
+    public String sendDistanceRequest(String originCoordinates,String destinationAddress)
     {
         ResteasyClient client = new ResteasyClientBuilder().build();
-        ResteasyWebTarget target = client.target("http://localhost:4000/geocode");//"https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+originsCoordinates+"&destinations=Kountouriotou 253,Pireas&departure_time=now&key=AIzaSyDW7z9-4rKR6W5kXTQ1AjiKB_2JSNsl3ko");
+        ResteasyWebTarget target = client.target("http://localhost:4000/geocode");//"https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+originsCoordinates+"&destinations="+destinationAddress+"&departure_time=now&key=AIzaSyDW7z9-4rKR6W5kXTQ1AjiKB_2JSNsl3ko");
         Response response = target.request().get();
         String responseStr = response.readEntity(String.class);
         response.close();

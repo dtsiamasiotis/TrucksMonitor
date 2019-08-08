@@ -1,20 +1,6 @@
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.json.simple.JSONObject;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.*;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.TransactionPhase;
 import javax.persistence.EntityManager;
@@ -22,9 +8,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
 import javax.websocket.Session;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.Response;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,15 +28,13 @@ public class backendManager {
     @Resource
     TimerService timerService;
 
-
     @PostConstruct
     public void init()
     {
-        System.out.print("backendManager created");
-        EntityManager em = entityManagerFactory.createEntityManager();
-        Query q = em.createNativeQuery("SELECT * FROM trucks",truck.class);
-        trucks = q.getResultList();
 
+        //EntityManager em = entityManagerFactory.createEntityManager();
+        //Query q = em.createNativeQuery("SELECT * FROM trucks",truck.class);
+        //trucks = q.getResultList();
 
     }
 
@@ -82,6 +63,13 @@ public class backendManager {
         }
     }
 
+    public void connectFromTruck(Session session)
+    {
+       truck Truck = new truck();
+       Truck.setSession(session);
+       trucks.add(Truck);
+    }
+
     public void pollTrucksForPosition()
     {
         for(truck Truck:trucks)
@@ -92,16 +80,6 @@ public class backendManager {
         }
     }
 
-
-    /*public void testUnmarshall()  throws Exception
-    {
-        String googleJson = sendRequestToGoogleApi("38.006726,23.863777");
-        //String googleJson = "{\"destination_addresses\": [\"Kountouriotou 253, Pireas 185 36, Greece\"],\"origin_addresses\": [\"Patriarchou Grigoriou E 5, Ag. Paraskevi 153 41, Greece\"],\"rows\": [{\"elements\": [{\"distance\": {\"text\": \"20.8 mi\",\"value\": 33486},\"duration\": {\"text\": \"33 mins\",\"value\": 1974},\"status\": \"OK\"}],}],\"status\": \"OK\"}";
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        googleResponse res = gson.fromJson(googleJson,googleResponse.class);
-        return;
-
-    }*/
 
     public truck setCoordinatesFromClient(Session session,String message)
     {
@@ -120,22 +98,6 @@ public class backendManager {
         }
 
         return null;
-    }
-
-    public String sendRequestToGoogleApi(String originsCoordinates)
-    {
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        ResteasyWebTarget target = client.target("http://localhost:4000/google_api");//"https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+originsCoordinates+"&destinations=Kountouriotou 253,Pireas&departure_time=now&key=AIzaSyDW7z9-4rKR6W5kXTQ1AjiKB_2JSNsl3ko");
-
-        Response response = target.request().get();
-        //Read output in string format
-        String responseStr = response.readEntity(String.class);
-
-
-        System.out.println(responseStr);
-        response.close();
-        return responseStr;
-        //return "";
     }
 
 
@@ -161,6 +123,7 @@ public class backendManager {
     @Timeout
     public void calculateDistances()
     {
-        //orderProcessor.findClosestTruck();
+        orderProcessor.findClosestTruck();
     }
+
 }

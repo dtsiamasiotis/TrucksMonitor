@@ -51,6 +51,12 @@ public class dbManager {
         em.remove(em.find(order.class,id));
     }
 
+    public void updateOrder(order Order)
+    {
+        EntityManager em = getEntityManager();
+        em.merge(Order);
+    }
+
     public List<truck> getTrucks()
     {
         EntityManager em = getEntityManager();
@@ -66,4 +72,5 @@ public class dbManager {
         List<order> orders = q.getResultList();
         return orders;
     }
+
 }

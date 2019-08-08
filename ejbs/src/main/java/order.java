@@ -13,6 +13,9 @@ public class order {
     private int quantity;
     private String status;
     private String address;
+    private String latitude;
+    private String longitude;
+
     @Transient
     private List<truck> candidateTrucks = new ArrayList<truck>();
 
@@ -30,4 +33,5 @@ public class order {
         candidateTrucks.add(newTruck);
     }
     public List<truck> getCandidateTrucks(){return candidateTrucks;}
+    public void setLatitude(String lat){this.latitude=lat;}
 }
