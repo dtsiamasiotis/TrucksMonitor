@@ -6,7 +6,7 @@ import javax.websocket.server.ServerEndpoint;
 
 
 
-@ServerEndpoint("/actions")
+@ServerEndpoint(value="/actions",decoders = messageDecoder.class,encoders = messageEncoder.class)
 public class webSocketServer {
 
     @Inject
@@ -22,14 +22,8 @@ public class webSocketServer {
     @OnMessage
     public void handleMessage(Session session, String message)
     {
-        if(message.contains("connectTruck"))
-            bcManager.connectFromTruck(session,message);
-        else if(message.contains("coordinates"))
-            bcManager.handleResponseForOrder(session,message);
-        else
-            try {
-               // bcManager.testUnmarshall();
-            }catch(Exception e){}
+
+        bcManager.handleResponseForOrder(session,message);
 
     }
 }
