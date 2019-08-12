@@ -3,6 +3,7 @@ import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.TransactionPhase;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
@@ -21,6 +22,9 @@ public class backendManager {
 
     @EJB
     private orderProcessor orderProcessor;
+
+    @Inject
+    private messageDecoder messageDecoder;
 
     @PersistenceUnit
     private EntityManagerFactory entityManagerFactory;
@@ -88,11 +92,17 @@ public class backendManager {
             Session truckSession = Truck.getSession();
             if(truckSession==session)
             {
-                String[] coordinatesParts = message.split("\\|")[0].split(":");
-                String lat = (coordinatesParts[1].split(","))[0];
-                String lng = (coordinatesParts[1].split(","))[1];
+                message decodedMessage = null;
+                try {
+                    decodedMessage = messageDecoder.decode(message);
+                }catch(Exception e){return null;}
+
+                String[] coordinatesParts = decodedMessage.getCoordinates().split(",");
+                String lat = coordinatesParts[0];
+                String lng = coordinatesParts[1];
                 Truck.setLat(lat);
                 Truck.setLng(lng);
+
                 return Truck;
             }
         }
@@ -103,19 +113,34 @@ public class backendManager {
 
     public void pollTrucksForPosition(int orderId)
     {
+        message Message = new message();
+        Message.setOperation("sharePosition");
+        messageOrder MessageOrder = new messageOrder();
+        MessageOrder.setOrderId(String.valueOf(orderId));
+        MessageOrder.setAddress("");
+        MessageOrder.setQuantity("");
+        Message.setOrder(MessageOrder);
+
         for(truck Truck:trucks)
         {
             Session session = Truck.getSession();
-            if(session!=null && session.isOpen())
-                session.getAsyncRemote().sendText("sharePosition|orderId:"+orderId);
+            if(session!=null && session.isOpen()){
+                try{
+                    session.getAsyncRemote().sendObject(Message);
+                }catch (Exception e){System.out.println("error sto send");};
+            }
+
         }
     }
 
     public void handleResponseForOrder(Session session,String message)
     {
         truck Truck = setCoordinatesFromClient(session,message);
-        String orderIdStr = message.split("\\|")[1].split(":")[1];
-        int orderId = Integer.parseInt(orderIdStr);
+        message decodedMessage = null;
+        try {
+            decodedMessage = messageDecoder.decode(message);
+        }catch(Exception e){return;}
+        int orderId = Integer.parseInt(decodedMessage.getOrder().getOrderId());
         orderProcessor.addCandidateTruck(Truck,orderId);
 
     }

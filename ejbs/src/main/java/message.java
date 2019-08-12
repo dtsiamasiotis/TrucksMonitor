@@ -5,5 +5,6 @@ import lombok.Setter;
 @Setter
 public class message {
     private String operation;
+    private String coordinates;
     private messageOrder order;
 }

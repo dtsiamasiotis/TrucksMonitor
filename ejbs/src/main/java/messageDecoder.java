@@ -1,9 +1,11 @@
 import com.google.gson.Gson;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 
+@ApplicationScoped
 public class messageDecoder implements Decoder.Text<message> {
     private static Gson gson = new Gson();
 
