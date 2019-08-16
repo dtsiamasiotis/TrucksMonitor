@@ -73,4 +73,17 @@ public class dbManager {
         return orders;
     }
 
+    public truck findTruckByLicencePlate(String licencePlate)
+    {
+        EntityManager em = getEntityManager();
+        Query q = em.createNativeQuery("SELECT * FROM trucks WHERE licence_plate = ?",truck.class);
+        q.setParameter(1,licencePlate);
+        List<truck> trucks = q.getResultList();
+
+        if(!trucks.isEmpty())
+            return trucks.get(0);
+        else
+            return null;
+    }
+
 }
