@@ -8,6 +8,7 @@ public class servletInit extends Application {
         classes.add(truckActions.class);
         classes.add(orderActions.class);
         classes.add(CorsFilter.class);
+        classes.add(userActions.class);
         return classes;
     }
 

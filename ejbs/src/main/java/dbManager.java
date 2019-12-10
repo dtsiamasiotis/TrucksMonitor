@@ -86,4 +86,17 @@ public class dbManager {
             return null;
     }
 
+    public Driver findDriverByPassword(String password)
+    {
+        EntityManager em = getEntityManager();
+        Query q = em.createNativeQuery("SELECT * FROM drivers WHERE password = ?",Driver.class);
+        q.setParameter(1,password);
+        List<Driver> drivers = q.getResultList();
+
+        if(!drivers.isEmpty())
+            return drivers.get(0);
+        else
+            return null;
+    }
+
 }

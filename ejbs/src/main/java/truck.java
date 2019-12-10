@@ -1,4 +1,3 @@
-import javax.ejb.Stateless;
 import javax.persistence.*;
 import javax.websocket.Session;
 
@@ -12,7 +11,7 @@ public class truck {
 
     private String licence_plate;
     private String status;
-    private int current_order_id;
+    private Integer current_order_id;
     private String password;
     @Transient
     private Session session;

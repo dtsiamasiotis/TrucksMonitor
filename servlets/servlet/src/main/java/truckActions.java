@@ -61,18 +61,19 @@ public class truckActions{
 
     @POST
     @Path("/validateLogin")
-    public Response handleValidateLogin(truck Truck)
+    public Response handleValidateLogin(LoginRequest loginRequest)
     {
-        String licencePlate = Truck.getLicenceplate();
-        String password = Truck.getPassword();
+        String licencePlate = loginRequest.getUsername();
+        String password = loginRequest.getPassword();
         truck resTruck = dbManager.findTruckByLicencePlate(licencePlate);
         if(resTruck==null)
-            return Response.ok("invalid username").build();
+            return Response.ok("{\"result\":\"wrong\"}").build();
         else{
-            if(password.equals(resTruck.getPassword()))
-                return Response.ok("OK").build();
+            Driver driver = dbManager.findDriverByPassword(password);
+            if(driver==null)
+                return Response.ok("{\"result\":\"wrong\"}").build();
             else
-                return Response.ok("invalid password").build();
+                return Response.ok("{\"result\":\"correct\"}").build();
         }
 
     }
