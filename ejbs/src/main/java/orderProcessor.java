@@ -1,6 +1,7 @@
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
+import javax.websocket.Session;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +59,27 @@ public class orderProcessor {
 
             closestTruck.setCurrentorderid(Order.getId());
             dbManager.updateTruck(closestTruck);
+            sendOrderToTruck(Order,closestTruck);
         }
+    }
+
+    public void sendOrderToTruck(order Order,truck Truck)
+    {
+        message Message = new message();
+        Message.setOperation("serveOrder");
+        messageOrder MessageOrder = new messageOrder();
+        MessageOrder.setOrderId(String.valueOf(Order.getId()));
+        MessageOrder.setAddress(Order.getAddress());
+        MessageOrder.setQuantity("");
+        Message.setOrder(MessageOrder);
+
+        Session session = Truck.getSession();
+        if(session!=null && session.isOpen()){
+            try{
+                session.getAsyncRemote().sendObject(Message);
+            }catch (Exception e){System.out.println("error sto send");};
+        }
+
     }
 
 }
