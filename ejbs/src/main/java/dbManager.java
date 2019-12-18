@@ -99,4 +99,10 @@ public class dbManager {
             return null;
     }
 
+    public order findOrderById(int id)
+    {
+        EntityManager em = getEntityManager();
+        return em.find(order.class,id);
+    }
+
 }
