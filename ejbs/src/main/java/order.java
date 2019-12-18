@@ -1,5 +1,6 @@
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -15,6 +16,7 @@ public class order {
     private String address;
     private String latitude;
     private String longitude;
+    private Date deliveryTime;
 
     @Transient
     private List<truck> candidateTrucks = new ArrayList<truck>();
@@ -34,4 +36,6 @@ public class order {
     }
     public List<truck> getCandidateTrucks(){return candidateTrucks;}
     public void setLatitude(String lat){this.latitude=lat;}
+    public void setDeliveryTime(Date deliveryTime){this.deliveryTime=deliveryTime;}
+    public Date getDeliveryTime(){return deliveryTime;}
 }
