@@ -10,6 +10,7 @@ import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
 import javax.websocket.Session;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -31,6 +32,10 @@ public class backendManager {
 
     @Resource
     TimerService timerService;
+
+    @EJB
+    private dbManager dbManager;
+
 
     @PostConstruct
     public void init()
@@ -55,7 +60,7 @@ public class backendManager {
         //synchronized block pou pairnei to pio palio apo tin oura kai psaxnei kalitero sindiasmo apostasi-xrono
     }
 
-    public void connectFromTruck(Session session,String message)
+   /* public void connectFromTruck(Session session,String message)
     {
         String parts[] = message.split(":");
         for (truck Truck:trucks) {
@@ -65,13 +70,13 @@ public class backendManager {
             }
 
         }
-    }
+    }*/
 
-    public void connectFromTruck(Session session)
+    public void connectFromTruck(Session session,String licencePlate)
     {
-       truck Truck = new truck();
-       Truck.setSession(session);
-       trucks.add(Truck);
+       truck resTruck = dbManager.findTruckByLicencePlate(licencePlate);
+       resTruck.setSession(session);
+       trucks.add(resTruck);
     }
 
     public void pollTrucksForPosition()
@@ -85,18 +90,13 @@ public class backendManager {
     }
 
 
-    public truck setCoordinatesFromClient(Session session,String message)
+    public truck setCoordinatesFromClient(Session session,message decodedMessage)
     {
         for(truck Truck:trucks)
         {
             Session truckSession = Truck.getSession();
             if(truckSession==session)
             {
-                message decodedMessage = null;
-                try {
-                    decodedMessage = messageDecoder.decode(message);
-                }catch(Exception e){return null;}
-
                 String[] coordinatesParts = decodedMessage.getCoordinates().split(",");
                 String lat = coordinatesParts[0];
                 String lng = coordinatesParts[1];
@@ -135,13 +135,21 @@ public class backendManager {
 
     public void handleResponseForOrder(Session session,String message)
     {
-        truck Truck = setCoordinatesFromClient(session,message);
+
         message decodedMessage = null;
         try {
             decodedMessage = messageDecoder.decode(message);
         }catch(Exception e){return;}
-        int orderId = Integer.parseInt(decodedMessage.getOrder().getOrderId());
-        orderProcessor.addCandidateTruck(Truck,orderId);
+        if(decodedMessage.getOperation().equals("completeOrder")) {
+            int orderId = Integer.parseInt(decodedMessage.getOrder().getOrderId());
+            setOrderAsCompleted(orderId);
+            System.out.println("completeOrder received");
+        }
+        else if(decodedMessage.getOperation().equals("sharePosition")){
+            truck Truck = setCoordinatesFromClient(session,decodedMessage);
+            int orderId = Integer.parseInt(decodedMessage.getOrder().getOrderId());
+            orderProcessor.addCandidateTruck(Truck, orderId);
+        }
 
     }
 
@@ -149,6 +157,15 @@ public class backendManager {
     public void calculateDistances()
     {
         orderProcessor.findClosestTruck();
+    }
+
+    public void setOrderAsCompleted(int orderId)
+    {
+        order Order = dbManager.findOrderById(orderId);
+        Date now = new Date();
+        Order.setStatus("COMPLETED");
+        Order.setDeliveryTime(now);
+        dbManager.updateOrder(Order);
     }
 
 }
