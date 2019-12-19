@@ -12,7 +12,6 @@ public class truck {
     private String licence_plate;
     private String status;
     private Integer current_order_id;
-    private String password;
     @Transient
     private Session session;
     @Transient
@@ -48,7 +47,5 @@ public class truck {
     public void setLng(String lng){this.lng = lng;}
     public String getLng(){return this.lng;}
 
-    public void setPassword(String password){this.password = password;}
-    public String getPassword(){return password;}
 
 }
