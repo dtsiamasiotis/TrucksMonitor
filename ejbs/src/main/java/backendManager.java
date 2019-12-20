@@ -150,6 +150,11 @@ public class backendManager {
             int orderId = Integer.parseInt(decodedMessage.getOrder().getOrderId());
             orderProcessor.addCandidateTruck(Truck, orderId);
         }
+        else if(decodedMessage.getOperation().equals("acceptOrder")){
+            int orderId = Integer.parseInt(decodedMessage.getOrder().getOrderId());
+            setOrderAsOnDelivery(orderId);
+            System.out.println("acceptOrder received");
+        }
 
     }
 
@@ -165,6 +170,13 @@ public class backendManager {
         Date now = new Date();
         Order.setStatus("COMPLETED");
         Order.setDeliveryTime(now);
+        dbManager.updateOrder(Order);
+    }
+
+    public void setOrderAsOnDelivery(int orderId)
+    {
+        order Order = dbManager.findOrderById(orderId);
+        Order.setStatus("ON_DELIVERY");
         dbManager.updateOrder(Order);
     }
 
